@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD de Itens</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">CRUD de Itens</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Opções:</h2>
+                <form id="crudForm">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <div class="form-group">
+                        <label for="name">Nome:</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Descrição:</label>
+                        <textarea class="form-control" id="description" name="description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Preço:</label>
+                        <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="operation">Selecione uma operação:</label>
+                        <select class="form-control" name="operation" id="operation">
+                            <option value="create">Criar</option>
+                            <option value="read">Ler</option>
+                            <option value="update">Atualizar</option>
+                            <option value="delete">Deletar</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div id="output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('crudForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var operation = document.getElementById('operation').value;
+            var url = '';
+        
+            switch(operation) {
+                case 'create':
+                    url = '/create/';
+                    break;
+                case 'read':
+                    url = '/read/';
+                    break;
+                case 'update':
+                    url = '/update/';
+                    break;
+                case 'delete':
+                    url = '/delete/';
+                    break;
+                default:
+                    break;
+            }
+        
+            var formData = {
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                price: parseFloat(document.getElementById('price').value),
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value
+            };
+        
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('output').innerHTML = JSON.stringify(data);
+            })
+            .catch(error => console.error('Erro:', error));
+        });        
+    </script>
+</body>
+</html>
