@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excluir Item</title>
+</head>
+<body>
+    <h1>Excluir Item</h1>
+    <p>Tem certeza de que deseja excluir este item?</p>
+    <form id="deleteForm">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{ item.id }}">
+        <button type="submit">Confirmar Exclusão</button>
+    </form>
+</body>
+</html>

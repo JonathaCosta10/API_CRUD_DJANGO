@@ -31,18 +31,43 @@ def create_item(request):
 
     return JsonResponse({'error': 'Método não permitido'}, status=405)
 
-
 @csrf_exempt
 def read_item(request, item_id):
-    # Recuperar e exibir informações sobre um item específico
-    pass
+    if request.method == 'GET':
+        try:
+            item = Item.objects.get(id=item_id)
+            return JsonResponse({'success': True, 'item': {
+                'id': item.id,
+                'name': item.name,
+                'description': item.description,
+                'price': str(item.price)
+            }})
+        except Item.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Item not found'}, status=404)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 @csrf_exempt
 def update_item(request, item_id):
-    # Processar solicitação PUT para atualizar um item existente
-    pass
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            item = Item.objects.get(id=item_id)
+            item.name = data.get('name', item.name)
+            item.description = data.get('description', item.description)
+            item.price = data.get('price', item.price)
+            item.save()
+            return JsonResponse({'success': True, 'message': 'Item updated successfully'})
+        except Item.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Item not found'}, status=404)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 @csrf_exempt
 def delete_item(request, item_id):
-    # Processar solicitação DELETE para excluir um item
-    pass
+    if request.method == 'DELETE':
+        try:
+            item = Item.objects.get(id=item_id)
+            item.delete()
+            return JsonResponse({'success': True, 'message': 'Item deleted successfully'})
+        except Item.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Item not found'}, status=404)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
