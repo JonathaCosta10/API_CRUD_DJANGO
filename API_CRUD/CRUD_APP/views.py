@@ -3,10 +3,8 @@ from django.http import JsonResponse
 from .models import Item
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 
-
-from django.shortcuts import render
-from .models import Item
 
 @csrf_exempt
 def index(request):
@@ -31,43 +29,48 @@ def create_item(request):
 
     return JsonResponse({'error': 'Método não permitido'}, status=405)
 
-@csrf_exempt
-def read_item(request, item_id):
-    if request.method == 'GET':
-        try:
-            item = Item.objects.get(id=item_id)
-            return JsonResponse({'success': True, 'item': {
-                'id': item.id,
-                'name': item.name,
-                'description': item.description,
-                'price': str(item.price)
-            }})
-        except Item.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Item not found'}, status=404)
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 @csrf_exempt
-def update_item(request, item_id):
+def read_item(request):
+    if request.method == 'GET':
+        item_id = request.GET.get('id')
+        try:
+            item = Item.objects.get(pk=item_id)
+            return JsonResponse({'success': True, 'item': {'id': item.id, 'name': item.name, 'description': item.description, 'price': float(item.price)}})
+        except ObjectDoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Item não encontrado'}, status=404)
+    else:
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
+    
+    
+@csrf_exempt
+def update_item(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        item_id = data.get('id')
         try:
-            item = Item.objects.get(id=item_id)
-            item.name = data.get('name', item.name)
-            item.description = data.get('description', item.description)
-            item.price = data.get('price', item.price)
+            item = Item.objects.get(pk=item_id)
+            item.name = data.get('name')
+            item.description = data.get('description')
+            item.price = data.get('price')
             item.save()
-            return JsonResponse({'success': True, 'message': 'Item updated successfully'})
-        except Item.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Item not found'}, status=404)
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
+            return JsonResponse({'success': True, 'message': 'Item atualizado com sucesso!'})
+        except ObjectDoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Item não encontrado'}, status=404)
+    else:
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
+
 
 @csrf_exempt
-def delete_item(request, item_id):
-    if request.method == 'DELETE':
+def delete_item(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        item_id = data.get('id')
         try:
-            item = Item.objects.get(id=item_id)
+            item = Item.objects.get(pk=item_id)
             item.delete()
-            return JsonResponse({'success': True, 'message': 'Item deleted successfully'})
-        except Item.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Item not found'}, status=404)
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
+            return JsonResponse({'success': True, 'message': 'Item deletado com sucesso!'})
+        except ObjectDoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Item não encontrado'}, status=404)
+    else:
+        return JsonResponse({'error': 'Método não permitido'}, status=405)
