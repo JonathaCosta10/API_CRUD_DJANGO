@@ -93,8 +93,10 @@
                     url = '/create/';
                     break;
                 case 'read':
-                    url = '/read/';
+                    var id = document.getElementById('id').value;
+                    url = '/read/?id=' + id; // Envie uma requisição GET com o ID como parâmetro na URL
                     break;
+                
                 case 'update':
                     url = '/update/';
                     break;

@@ -16,11 +16,14 @@ def index(request):
     items = Item.objects.all()
     return render(request, 'index.html', {'items': items})
 
+# views.py
 
 @csrf_exempt
 def read_item(request):
-    if request.method == 'GET':
-        item_id = request.GET.get('id')
+    if request.method == 'GET' or request.method == 'POST':
+        data = json.loads(request.body)
+        item_id = data.get('id')
+        print("ID do item recebido:", item_id)  # Adicione este log para depuração
         try:
             item = Item.objects.get(pk=item_id)
             return JsonResponse({'success': True, 'item': {'id': item.id, 'name': item.name, 'description': item.description, 'price': float(item.price)}})
@@ -28,9 +31,6 @@ def read_item(request):
             return JsonResponse({'success': False, 'message': 'Item não encontrado'}, status=404)
     else:
         return JsonResponse({'error está entrando aqui ?': 'Método não permitido', }, status=405)
-
-
-
 
 
 @csrf_exempt
