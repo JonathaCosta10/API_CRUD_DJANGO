@@ -53,6 +53,36 @@
     </div>
 
     <script>
+
+        // Atualiza o formulário com base na operação selecionada
+        document.getElementById('operation').addEventListener('change', function() {
+            var operation = this.value;
+            var nameField = document.getElementById('nameField');
+            var descriptionField = document.getElementById('descriptionField');
+            var priceField = document.getElementById('priceField');
+            var idField = document.getElementById('idField');
+
+            nameField.style.display = 'none';
+            descriptionField.style.display = 'none';
+            priceField.style.display = 'none';
+            idField.style.display = 'none';
+
+            if (operation === 'create') {
+                nameField.style.display = 'block';
+                descriptionField.style.display = 'block';
+                priceField.style.display = 'block';
+            } else if (operation === 'read' || operation === 'delete') {
+                idField.style.display = 'block';
+            } else if (operation === 'update') {
+                nameField.style.display = 'block';
+                descriptionField.style.display = 'block';
+                priceField.style.display = 'block';
+                idField.style.display = 'block';
+            }
+        });     
+
+
+
         document.getElementById('crudForm').addEventListener('submit', function(event) {
             event.preventDefault();
             var operation = document.getElementById('operation').value;
@@ -106,36 +136,6 @@
         });  
 
 
-
-        
-
-
-        // Atualiza o formulário com base na operação selecionada
-        document.getElementById('operation').addEventListener('change', function() {
-            var operation = this.value;
-            var nameField = document.getElementById('nameField');
-            var descriptionField = document.getElementById('descriptionField');
-            var priceField = document.getElementById('priceField');
-            var idField = document.getElementById('idField');
-
-            nameField.style.display = 'none';
-            descriptionField.style.display = 'none';
-            priceField.style.display = 'none';
-            idField.style.display = 'none';
-
-            if (operation === 'create') {
-                nameField.style.display = 'block';
-                descriptionField.style.display = 'block';
-                priceField.style.display = 'block';
-            } else if (operation === 'read' || operation === 'delete') {
-                idField.style.display = 'block';
-            } else if (operation === 'update') {
-                nameField.style.display = 'block';
-                descriptionField.style.display = 'block';
-                priceField.style.display = 'block';
-                idField.style.display = 'block';
-            }
-        });     
     </script>
 </body>
 </html>
